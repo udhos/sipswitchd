@@ -1,0 +1,17 @@
+SUBSCRIBE sip:lab@127.0.0.1;transport=UDP SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:63422;branch=z9hG4bK-d8754z-40f33a4be8ca704e-1---d8754z-
+Max-Forwards: 70
+Contact: <sip:lab@127.0.0.1:63422;transport=UDP>
+To: "labdomain"<sip:lab@127.0.0.1;transport=UDP>
+From: "labdomain"<sip:lab@127.0.0.1;transport=UDP>;tag=d4779e50
+Call-ID: NmMyNjhlZDhlZmUxYmQ5ZWVhMzAwMjkyOGFiZTIwOWE.
+CSeq: 1 SUBSCRIBE
+Expires: 3600
+Accept: application/simple-message-summary
+Allow: INVITE, ACK, CANCEL, BYE, NOTIFY, REFER, MESSAGE, OPTIONS, INFO, SUBSCRIBE
+Supported: replaces, norefersub, extended-refer, timer, X-cisco-serviceuri
+User-Agent: Z 3.0.19632 r19608
+Event: message-summary
+Allow-Events: presence, kpml
+Content-Length: 0
+
