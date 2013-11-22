@@ -6,6 +6,8 @@ import (
 	"log"
 	"net"
 	"sip_parser"
+
+	"telnet"
 )
 
 var ()
@@ -45,15 +47,6 @@ func parseSIP(msg string) {
 
 // https://groups.google.com/forum/#!topic/golang-nuts/Hm8KaV89Jcs
 // http://stackoverflow.com/questions/5884154/golang-read-text-file-into-string-array-and-write
-/*
-for {
-  line, prefix, err := lines.ReadLine()
-  if prefix { ... }
-  if err == os.EOF { break }
-  if err != nil { ... }
-  ...
-}
-*/
 func handleConn(conn net.Conn) {
 	defer conn.Close()
 	/*
@@ -91,7 +84,7 @@ func handleConn(conn net.Conn) {
 }
 
 func handleTCP(listener net.Listener, addr string) {
-	log.Printf("serving on TCP %s", addr)
+	log.Printf("serving SIP on TCP %s", addr)
 
 	for {
 		conn, err := listener.Accept()
@@ -104,7 +97,7 @@ func handleTCP(listener net.Listener, addr string) {
 }
 
 func handleUDP(udpConn *net.UDPConn, addr string) {
-	log.Printf("serving on UDP %s", addr)
+	log.Printf("serving SIP on UDP %s", addr)
 
 	if _, err := udpConn.File(); err != nil {
 		log.Printf("handleUDP: unable to set UDP connection to blocking: %s", err)
@@ -161,12 +154,54 @@ func listenBoth(addr string) {
 	listenTCP(addr)
 }
 
+func inputLoop(rd *bufio.Reader) {
+	log.Printf("FIXME WRITEME inputLoop")
+}
+
+func outputLoop(wr *bufio.Writer) {
+	log.Printf("FIXME WRITEME outputLoop")
+}
+
+func handleTelnet(conn net.Conn) {
+	defer conn.Close()
+
+	rd, wr := bufio.NewReader(conn), bufio.NewWriter(conn)
+
+	//create userOut channel: will send messages to user
+
+	//create cli interpreter: will write to userOut channel when needed
+
+	//go routine loop:
+	//	- read from userOut channel and write into wr
+	//	- watch quitOutput channel
+	go inputLoop(rd)
+
+	//loop:
+	//	- read from rd and feed into cli interpreter
+	//	- watch idle timeout
+	//	- watch quitInput channel
+	outputLoop(wr)
+}
+
+func listenTelnet(addr string) {
+	telnetServer := telnet.Server{Addr: addr, Handler: handleTelnet}
+
+	log.Printf("serving telnet on TCP %s", addr)
+
+	if err := telnetServer.ListenAndServe(); err != nil {
+		log.Fatalf("telnet server on address %s: error: %s", addr, err)
+	}
+}
+
 func main() {
 	log.Printf("sipswitchd booting")
 
-	addr := ":5060"
+	go listenTelnet(":23")
 
+	addr := ":5060"
 	listenBoth(addr)
+
+	log.Printf("sipswitchd ready")
 
 	// wait forever
 	<-make(chan int)
